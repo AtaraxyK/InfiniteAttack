@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="gyro core">
+  <circle cx="32" cy="32" r="9" fill="#a2f0df"/>
+  <ellipse cx="32" cy="32" rx="25" ry="10" fill="none" stroke="#c9fff7" stroke-width="4"/>
+  <ellipse cx="32" cy="32" rx="10" ry="25" fill="none" stroke="#7ec8cf" stroke-width="4"/>
+  <path d="M12 14l8 3M52 50l-8-3" stroke="#dbeceb" stroke-width="4" stroke-linecap="round"/>
+</svg>

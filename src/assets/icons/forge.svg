@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="forge">
+  <path d="M13 39h32c0 8-6 14-16 14H13z" fill="#6f7e82" stroke="#c7d3d6" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M22 39l8-15h17l-6 15z" fill="#344349" stroke="#c7d3d6" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M42 14l8 8M48 8l8 8M39 17l14-14 8 8-14 14z" fill="#b56b3a" stroke="#ffd5a3" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M18 53h28" stroke="#f2c37f" stroke-width="4" stroke-linecap="round"/>
+</svg>

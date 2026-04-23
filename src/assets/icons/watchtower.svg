@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="watchtower">
+  <path d="M18 58l6-34h16l6 34z" fill="#536a69" stroke="#c6dddd" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M15 22h34l-4-12H19z" fill="#7e8f86" stroke="#d2e6d8" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M24 31h16M22 44h20" stroke="#d2e6d8" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="32" cy="16" r="5" fill="#9bd6df"/>
+</svg>

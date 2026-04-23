@@ -270,6 +270,44 @@ button:disabled {
   padding: 14px;
 }
 
+.game-icon {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.22));
+}
+
+.resource-chip .game-icon {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 8px;
+}
+
+.overview-card .game-icon,
+.detail-item .game-icon {
+  margin-bottom: 10px;
+}
+
+.building-card > .game-icon {
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+}
+
+.gear-card .game-icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 10px;
+}
+
+.large-symbol {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
 .resource-chip span,
 .stat-card span,
 .overview-card span,

@@ -1,10 +1,18 @@
 import type { BuildingDefinition, GearCard, StageDefinition } from './types';
+import forgeIcon from './assets/icons/forge.svg';
+import watchtowerIcon from './assets/icons/watchtower.svg';
+import aetherPumpIcon from './assets/icons/aether-pump.svg';
+import ironBladeIcon from './assets/icons/iron-blade.svg';
+import burstHammerIcon from './assets/icons/burst-hammer.svg';
+import scopeLensIcon from './assets/icons/scope-lens.svg';
+import gyroCoreIcon from './assets/icons/gyro-core.svg';
 
 export const buildingDefinitions: BuildingDefinition[] = [
   {
     id: 'forge',
     name: '대장간',
     description: '무기 계열 공격력을 올려 전투 점수를 안정적으로 끌어올립니다.',
+    icon: forgeIcon,
     baseDurationSeconds: 45,
     maxLevel: 20,
     cost: { gold: 120n, scrap: 15n },
@@ -14,6 +22,7 @@ export const buildingDefinitions: BuildingDefinition[] = [
     id: 'watchtower',
     name: '감시탑',
     description: '스테이지 정보를 더 많이 보여주고 방어 점수에 보너스를 제공합니다.',
+    icon: watchtowerIcon,
     baseDurationSeconds: 75,
     maxLevel: 20,
     cost: { gold: 180n, scrap: 25n },
@@ -23,6 +32,7 @@ export const buildingDefinitions: BuildingDefinition[] = [
     id: 'aetherPump',
     name: '에테르 펌프',
     description: '희귀 재화 생산량을 높여 장기 성장의 속도를 끌어올립니다.',
+    icon: aetherPumpIcon,
     baseDurationSeconds: 120,
     maxLevel: 15,
     cost: { gold: 260n, aether: 6n },
@@ -31,10 +41,38 @@ export const buildingDefinitions: BuildingDefinition[] = [
 ];
 
 export const starterGear: GearCard[] = [
-  { id: 'iron-blade', name: '철검', slot: 'weapon', power: 32n, synergy: '기본 공격 배율 안정' },
-  { id: 'burst-hammer', name: '파열 해머', slot: 'weapon', power: 48n, synergy: '높은 단일 턴 점수' },
-  { id: 'scope-lens', name: '조준 렌즈', slot: 'aux', power: 18n, synergy: '치명타 기대값 상승' },
-  { id: 'gyro-core', name: '자이로 코어', slot: 'aux', power: 24n, synergy: '연계 무기 보정' },
+  {
+    id: 'iron-blade',
+    name: '철검',
+    slot: 'weapon',
+    icon: ironBladeIcon,
+    power: 32n,
+    synergy: '기본 공격 배율 안정',
+  },
+  {
+    id: 'burst-hammer',
+    name: '파열 해머',
+    slot: 'weapon',
+    icon: burstHammerIcon,
+    power: 48n,
+    synergy: '높은 단일 턴 점수',
+  },
+  {
+    id: 'scope-lens',
+    name: '조준 렌즈',
+    slot: 'aux',
+    icon: scopeLensIcon,
+    power: 18n,
+    synergy: '치명타 기대값 상승',
+  },
+  {
+    id: 'gyro-core',
+    name: '자이로 코어',
+    slot: 'aux',
+    icon: gyroCoreIcon,
+    power: 24n,
+    synergy: '연계 무기 보정',
+  },
 ];
 
 export const stageDefinitions: StageDefinition[] = [

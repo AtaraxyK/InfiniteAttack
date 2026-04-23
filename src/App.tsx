@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { buildingDefinitions, stageDefinitions, starterGear } from './data';
 import { formatBig, formatCurrencyMap, labelForCurrency, multiplyPercent } from './utils';
+import goldIcon from './assets/icons/gold.svg';
+import scrapIcon from './assets/icons/scrap.svg';
+import aetherIcon from './assets/icons/aether.svg';
 import type {
   ActiveConstruction,
   BuildingState,
@@ -21,6 +24,12 @@ const themeOptions: Array<{ key: ThemeKey; label: string }> = [
   { key: 'sandDusk', label: '샌드' },
   { key: 'roseAsh', label: '로즈 애쉬' },
 ];
+
+const currencyIcons: Record<CurrencyKey, string> = {
+  gold: goldIcon,
+  scrap: scrapIcon,
+  aether: aetherIcon,
+};
 
 const initialHero: HeroStats = {
   level: 7,
@@ -73,17 +82,14 @@ export function App() {
 
         const completed = lane.activeProject;
 
-        setBuildings((previous) => {
-          const currentBuilding = previous[completed.buildingId];
-          return {
-            ...previous,
-            [completed.buildingId]: {
-              ...currentBuilding,
-              level: Math.max(currentBuilding.level, completed.targetLevel),
-              pendingConfirmation: true,
-            },
-          };
-        });
+        setBuildings((previous) => ({
+          ...previous,
+          [completed.buildingId]: {
+            ...previous[completed.buildingId],
+            level: Math.max(previous[completed.buildingId].level, completed.targetLevel),
+            pendingConfirmation: true,
+          },
+        }));
 
         return {
           ...lane,
@@ -98,11 +104,9 @@ export function App() {
 
   const selectedStage = stageDefinitions.find((stage) => stage.id === selectedStageId)!;
   const selectedGear = starterGear.filter((gear) => selectedGearIds.includes(gear.id));
-
   const forgeLevel = buildings.forge.level;
   const watchtowerLevel = buildings.watchtower.level;
   const aetherPumpLevel = buildings.aetherPump.level;
-
   const buildingAttackBonus = 1 + forgeLevel * 0.08;
   const buildingDefenseBonus = 1 + watchtowerLevel * 0.12;
   const passiveAetherGain = BigInt(aetherPumpLevel);
@@ -126,11 +130,7 @@ export function App() {
         return current.filter((gearId) => gearId !== id);
       }
 
-      if (current.length >= 2) {
-        return [current[1], id];
-      }
-
-      return [...current, id];
+      return current.length >= 2 ? [current[1], id] : [...current, id];
     });
   }
 
@@ -163,19 +163,8 @@ export function App() {
       return;
     }
 
-    const currentLevel = buildings[buildingId].level;
-    const targetLevel = currentLevel + 1;
-
-    if (targetLevel > definition.maxLevel) {
-      return;
-    }
-
-    const lacksCost = Object.entries(definition.cost).some(([key, value]) => {
-      const amount = value ?? 0n;
-      return resources[key as CurrencyKey] < amount;
-    });
-
-    if (lacksCost) {
+    const targetLevel = buildings[buildingId].level + 1;
+    if (targetLevel > definition.maxLevel || !canAffordCost(resources, definition.cost)) {
       return;
     }
 
@@ -197,16 +186,10 @@ export function App() {
         }
 
         if (!lane.activeProject) {
-          return {
-            ...lane,
-            activeProject: beginConstruction(buildingId, targetLevel, now),
-          };
+          return { ...lane, activeProject: beginConstruction(buildingId, targetLevel, now) };
         }
 
-        return {
-          ...lane,
-          queue: { buildingId, targetLevel },
-        };
+        return { ...lane, queue: { buildingId, targetLevel } };
       }),
     );
   }
@@ -214,10 +197,7 @@ export function App() {
   function confirmBuilding(buildingId: string) {
     setBuildings((current) => ({
       ...current,
-      [buildingId]: {
-        ...current[buildingId],
-        pendingConfirmation: false,
-      },
+      [buildingId]: { ...current[buildingId], pendingConfirmation: false },
     }));
   }
 
@@ -248,9 +228,8 @@ export function App() {
             <div className="resource-panel">
               {Object.entries(resources).map(([key, value]) => (
                 <div key={key} className="resource-chip">
-                  <span>
-                    {resourceEmoji(key as CurrencyKey)} {labelForCurrency(key as CurrencyKey)}
-                  </span>
+                  <Icon src={currencyIcons[key as CurrencyKey]} alt="" />
+                  <span>{labelForCurrency(key as CurrencyKey)}</span>
                   <strong>{formatBig(value)}</strong>
                 </div>
               ))}
@@ -259,171 +238,175 @@ export function App() {
         </header>
 
         <main className="dashboard">
-        <section className="panel">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Overview</p>
-              <h2>한눈 요약</h2>
+          <section className="panel">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Overview</p>
+                <h2>한눈 요약</h2>
+              </div>
             </div>
-          </div>
 
-          <div className="overview-grid">
-            <button
-              className={activeDetailPanel === 'resources' ? 'overview-card active' : 'overview-card'}
-              onClick={() => setActiveDetailPanel('resources')}
-            >
-              <span>재화 흐름</span>
-              <strong>🪙 {formatBig(resources.gold)}</strong>
-              <p>현재 보유량과 재화 용도를 한 번에 봅니다.</p>
-            </button>
-            <button
-              className={activeDetailPanel === 'construction' ? 'overview-card active' : 'overview-card'}
-              onClick={() => setActiveDetailPanel('construction')}
-            >
-              <span>건설 상황</span>
-              <strong>🏗️ {activeConstructionCount}/2 진행 중</strong>
-              <p>예약 {queuedConstructionCount}개 / 완료 확인 대기 {pendingConfirmations}개</p>
-            </button>
-            <button
-              className={activeDetailPanel === 'battle' ? 'overview-card active' : 'overview-card'}
-              onClick={() => setActiveDetailPanel('battle')}
-            >
-              <span>전투 준비</span>
-              <strong>⚔️ {formatBig(projectedCombatPower)}</strong>
-              <p>{selectedStage.name} / 요구치 {formatBig(selectedStage.encounterPower)}</p>
-            </button>
-          </div>
-
-          <DetailPanelSection
-            activeDetailPanel={activeDetailPanel}
-            resources={resources}
-            passiveAetherGain={passiveAetherGain}
-            buildings={buildings}
-            lanes={lanes}
-            now={now}
-            selectedStage={selectedStage}
-            projectedCombatPower={projectedCombatPower}
-            selectedGear={selectedGear}
-          />
-        </section>
-
-        <section className="panel">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Hero</p>
-              <h2>영웅 성장</h2>
-            </div>
-          </div>
-          <div className="stat-grid">
-            <StatCard label="레벨" value={hero.level.toString()} />
-            <StatCard label="공격력" value={formatBig(hero.attack)} />
-            <StatCard label="방어력" value={formatBig(hero.defense)} />
-            <StatCard label="체력" value={formatBig(hero.hp)} />
-            <StatCard label="치명타" value={`${Math.round(hero.critRate * 100)}%`} />
-            <StatCard label="예상 전투력" value={formatBig(projectedCombatPower)} />
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Construction</p>
-              <h2>건설 라인</h2>
-            </div>
-            <span className="pill">동시 진행 2개, 줄당 예약 1개</span>
-          </div>
-          <div className="lane-grid">
-            {lanes.map((lane) => (
-              <article key={lane.laneId} className="lane-card">
-                <h3>라인 {lane.laneId}</h3>
-                <p>{lane.activeProject ? describeProject(lane.activeProject, now) : '비어 있음'}</p>
-                <p className="muted">
-                  예약:{' '}
-                  {lane.queue
-                    ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}`
-                    : '없음'}
-                </p>
-              </article>
-            ))}
-          </div>
-
-          <div className="building-list">
-            {buildingDefinitions.map((building) => {
-              const state = buildings[building.id];
-              const nextLevel = state.level + 1;
-              const isMaxLevel = state.level >= building.maxLevel;
-              const canAfford = canAffordCost(resources, building.cost);
-
-              return (
-                <article key={building.id} className="building-card">
-                  <div>
-                    <p className="eyebrow">{building.reward}</p>
-                    <h3>
-                      {building.name} Lv.{state.level}
-                    </h3>
-                    <p>{building.description}</p>
-                    <div className="building-meta">
-                      <span>다음 목표: Lv.{Math.min(nextLevel, building.maxLevel)}</span>
-                      <span>비용: {formatCurrencyMap(building.cost)}</span>
-                      <span>시간: {building.baseDurationSeconds * Math.min(nextLevel, building.maxLevel)}초</span>
-                    </div>
-                  </div>
-                  <div className="building-actions">
-                    <button disabled={isMaxLevel || !canAfford} onClick={() => queueConstruction(building.id)}>
-                      {isMaxLevel ? '최대 레벨' : '건설 예약'}
-                    </button>
-                    {state.pendingConfirmation ? (
-                      <button className="secondary" onClick={() => confirmBuilding(building.id)}>
-                        완료 확인
-                      </button>
-                    ) : null}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Battle</p>
-              <h2>장비 선택 전투</h2>
-            </div>
-          </div>
-          <div className="gear-grid">
-            {starterGear.map((gear) => (
-              <GearButton
-                key={gear.id}
-                gear={gear}
-                active={selectedGearIds.includes(gear.id)}
-                onToggle={() => toggleGear(gear.id)}
-              />
-            ))}
-          </div>
-
-          <div className="stage-list">
-            {stageDefinitions.map((stage) => (
+            <div className="overview-grid">
               <button
-                key={stage.id}
-                className={stage.id === selectedStageId ? 'stage-card active' : 'stage-card'}
-                onClick={() => setSelectedStageId(stage.id)}
+                className={activeDetailPanel === 'resources' ? 'overview-card active' : 'overview-card'}
+                onClick={() => setActiveDetailPanel('resources')}
               >
-                <span>{stage.name}</span>
-                <strong>요구치 {formatBig(stage.encounterPower)}</strong>
+                <Icon src={goldIcon} alt="" />
+                <span>재화 흐름</span>
+                <strong>{formatBig(resources.gold)}</strong>
+                <p>현재 보유량과 재화 용도를 한 번에 봅니다.</p>
               </button>
-            ))}
-          </div>
+              <button
+                className={activeDetailPanel === 'construction' ? 'overview-card active' : 'overview-card'}
+                onClick={() => setActiveDetailPanel('construction')}
+              >
+                <span className="large-symbol">🏗</span>
+                <span>건설 상황</span>
+                <strong>{activeConstructionCount}/2 진행 중</strong>
+                <p>예약 {queuedConstructionCount}개 / 완료 확인 대기 {pendingConfirmations}개</p>
+              </button>
+              <button
+                className={activeDetailPanel === 'battle' ? 'overview-card active' : 'overview-card'}
+                onClick={() => setActiveDetailPanel('battle')}
+              >
+                <span className="large-symbol">⚔</span>
+                <span>전투 준비</span>
+                <strong>{formatBig(projectedCombatPower)}</strong>
+                <p>{selectedStage.name} / 요구치 {formatBig(selectedStage.encounterPower)}</p>
+              </button>
+            </div>
 
-          <div className="battle-preview">
-            <p className="muted">{selectedStage.note}</p>
-            <p>선택 장비: {selectedGear.map((gear) => gear.name).join(', ') || '없음'}</p>
-            <p>승리 보상: {formatCurrencyMap(selectedStage.reward)}</p>
-            <button onClick={() => runBattle(selectedStage)}>전투 실행</button>
-          </div>
+            <DetailPanelSection
+              activeDetailPanel={activeDetailPanel}
+              resources={resources}
+              passiveAetherGain={passiveAetherGain}
+              buildings={buildings}
+              lanes={lanes}
+              now={now}
+              selectedStage={selectedStage}
+              projectedCombatPower={projectedCombatPower}
+              selectedGear={selectedGear}
+            />
+          </section>
 
-          <div className="combat-log">{combatLog}</div>
-        </section>
+          <section className="panel">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Hero</p>
+                <h2>영웅 성장</h2>
+              </div>
+            </div>
+            <div className="stat-grid">
+              <StatCard label="레벨" value={hero.level.toString()} />
+              <StatCard label="공격력" value={formatBig(hero.attack)} />
+              <StatCard label="방어력" value={formatBig(hero.defense)} />
+              <StatCard label="체력" value={formatBig(hero.hp)} />
+              <StatCard label="치명타" value={`${Math.round(hero.critRate * 100)}%`} />
+              <StatCard label="예상 전투력" value={formatBig(projectedCombatPower)} />
+            </div>
+          </section>
+
+          <section className="panel">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Construction</p>
+                <h2>건설 라인</h2>
+              </div>
+              <span className="pill">동시 진행 2개, 줄당 예약 1개</span>
+            </div>
+            <div className="lane-grid">
+              {lanes.map((lane) => (
+                <article key={lane.laneId} className="lane-card">
+                  <h3>라인 {lane.laneId}</h3>
+                  <p>{lane.activeProject ? describeProject(lane.activeProject, now) : '비어 있음'}</p>
+                  <p className="muted">
+                    예약:{' '}
+                    {lane.queue
+                      ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}`
+                      : '없음'}
+                  </p>
+                </article>
+              ))}
+            </div>
+
+            <div className="building-list">
+              {buildingDefinitions.map((building) => {
+                const state = buildings[building.id];
+                const nextLevel = state.level + 1;
+                const isMaxLevel = state.level >= building.maxLevel;
+                const canAfford = canAffordCost(resources, building.cost);
+
+                return (
+                  <article key={building.id} className="building-card">
+                    <Icon src={building.icon} alt="" />
+                    <div>
+                      <p className="eyebrow">{building.reward}</p>
+                      <h3>
+                        {building.name} Lv.{state.level}
+                      </h3>
+                      <p>{building.description}</p>
+                      <div className="building-meta">
+                        <span>다음 목표: Lv.{Math.min(nextLevel, building.maxLevel)}</span>
+                        <span>비용: {formatCurrencyMap(building.cost)}</span>
+                        <span>시간: {building.baseDurationSeconds * Math.min(nextLevel, building.maxLevel)}초</span>
+                      </div>
+                    </div>
+                    <div className="building-actions">
+                      <button disabled={isMaxLevel || !canAfford} onClick={() => queueConstruction(building.id)}>
+                        {isMaxLevel ? '최대 레벨' : '건설 예약'}
+                      </button>
+                      {state.pendingConfirmation ? (
+                        <button className="secondary" onClick={() => confirmBuilding(building.id)}>
+                          완료 확인
+                        </button>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="panel">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Battle</p>
+                <h2>장비 선택 전투</h2>
+              </div>
+            </div>
+            <div className="gear-grid">
+              {starterGear.map((gear) => (
+                <GearButton
+                  key={gear.id}
+                  gear={gear}
+                  active={selectedGearIds.includes(gear.id)}
+                  onToggle={() => toggleGear(gear.id)}
+                />
+              ))}
+            </div>
+
+            <div className="stage-list">
+              {stageDefinitions.map((stage) => (
+                <button
+                  key={stage.id}
+                  className={stage.id === selectedStageId ? 'stage-card active' : 'stage-card'}
+                  onClick={() => setSelectedStageId(stage.id)}
+                >
+                  <span>{stage.name}</span>
+                  <strong>요구치 {formatBig(stage.encounterPower)}</strong>
+                </button>
+              ))}
+            </div>
+
+            <div className="battle-preview">
+              <p className="muted">{selectedStage.note}</p>
+              <p>선택 장비: {selectedGear.map((gear) => gear.name).join(', ') || '없음'}</p>
+              <p>승리 보상: {formatCurrencyMap(selectedStage.reward)}</p>
+              <button onClick={() => runBattle(selectedStage)}>전투 실행</button>
+            </div>
+
+            <div className="combat-log">{combatLog}</div>
+          </section>
         </main>
       </div>
     </div>
@@ -458,9 +441,8 @@ function DetailPanelSection({
         <div className="detail-grid">
           {Object.entries(resources).map(([key, value]) => (
             <article key={key} className="detail-item">
-              <span>
-                {resourceEmoji(key as CurrencyKey)} {labelForCurrency(key as CurrencyKey)}
-              </span>
+              <Icon src={currencyIcons[key as CurrencyKey]} alt="" />
+              <span>{labelForCurrency(key as CurrencyKey)}</span>
               <strong>{formatBig(value)}</strong>
               <p>{describeResource(key as CurrencyKey, passiveAetherGain)}</p>
             </article>
@@ -487,6 +469,7 @@ function DetailPanelSection({
           ))}
           {buildingDefinitions.map((building) => (
             <article key={building.id} className="detail-item">
+              <Icon src={building.icon} alt="" />
               <span>{building.name}</span>
               <strong>Lv.{buildings[building.id].level}</strong>
               <p>
@@ -546,12 +529,17 @@ function GearButton({
 }) {
   return (
     <button className={active ? 'gear-card active' : 'gear-card'} onClick={onToggle}>
+      <Icon src={gear.icon} alt="" />
       <span>{gear.slot === 'weapon' ? '무기' : '보조'}</span>
       <strong>{gear.name}</strong>
       <p>{gear.synergy}</p>
       <em>+{formatBig(gear.power)}</em>
     </button>
   );
+}
+
+function Icon({ src, alt }: { src: string; alt: string }) {
+  return <img className="game-icon" src={src} alt={alt} aria-hidden={alt ? undefined : true} />;
 }
 
 function beginConstruction(buildingId: string, targetLevel: number, now: number): ActiveConstruction {
@@ -579,17 +567,6 @@ function canAffordCost(
   cost: Partial<Record<CurrencyKey, bigint>>,
 ): boolean {
   return !Object.entries(cost).some(([key, value]) => resources[key as CurrencyKey] < (value ?? 0n));
-}
-
-function resourceEmoji(key: CurrencyKey): string {
-  switch (key) {
-    case 'gold':
-      return '🪙';
-    case 'scrap':
-      return '🔩';
-    case 'aether':
-      return '✨';
-  }
 }
 
 function describeResource(key: CurrencyKey, passiveAetherGain: bigint): string {

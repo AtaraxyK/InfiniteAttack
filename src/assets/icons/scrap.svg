@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="scrap gear">
+  <circle cx="32" cy="32" r="10" fill="#8fa5aa"/>
+  <path d="M32 8l5 9 10-2 2 10 9 5-6 8 3 10-10 3-5 9-8-6-9 6-5-9-10-3 3-10-6-8 9-5 2-10 10 2z" fill="#64777d" stroke="#c9d6d8" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="32" cy="32" r="9" fill="#15242a" stroke="#c9d6d8" stroke-width="4"/>
+</svg>

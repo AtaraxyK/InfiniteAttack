@@ -4,6 +4,7 @@ export type BuildingDefinition = {
   id: string;
   name: string;
   description: string;
+  icon: string;
   baseDurationSeconds: number;
   maxLevel: number;
   cost: Partial<Record<CurrencyKey, bigint>>;
@@ -44,6 +45,7 @@ export type GearCard = {
   id: string;
   name: string;
   slot: 'weapon' | 'aux';
+  icon: string;
   power: bigint;
   synergy: string;
 };

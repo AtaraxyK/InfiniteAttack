@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="burst hammer">
+  <path d="M12 50l24-24 6 6-24 24z" fill="#8b6548" stroke="#e3c29e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M31 13l9-9 20 20-9 9z" fill="#6f7b80" stroke="#d7e0e3" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M44 10l10 10M39 15l10 10" stroke="#ffcf77" stroke-width="3" stroke-linecap="round"/>
+</svg>

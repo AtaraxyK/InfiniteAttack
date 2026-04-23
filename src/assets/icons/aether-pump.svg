@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="aether pump">
+  <path d="M18 55V32c0-9 6-16 14-16s14 7 14 16v23" fill="#33464c" stroke="#bfd6d8" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M24 55h16M24 36h16" stroke="#bfd6d8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M32 7l9 10-9 18-9-18z" fill="#86e8d9" stroke="#e3fffa" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M46 31h10v16H46" fill="none" stroke="#bfd6d8" stroke-width="4" stroke-linejoin="round"/>
+</svg>
