@@ -17,6 +17,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 button {
@@ -28,6 +29,7 @@ button {
   font: inherit;
   padding: 0.8rem 1rem;
   transition: transform 140ms ease, opacity 140ms ease;
+  width: 100%;
 }
 
 button:hover {
@@ -68,9 +70,12 @@ button.secondary {
 .hero-banner h1,
 .section-head h2,
 .building-card h3,
-.lane-card h3 {
+.lane-card h3,
+.gear-card strong,
+.stage-card strong {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
+  overflow-wrap: anywhere;
 }
 
 .hero-banner h1 {
@@ -132,6 +137,7 @@ button.secondary {
   border-radius: 18px;
   border: 1px solid rgba(244, 239, 229, 0.1);
   background: rgba(244, 239, 229, 0.04);
+  min-width: 0;
 }
 
 .resource-chip,
@@ -184,8 +190,18 @@ button.secondary {
   background: rgba(244, 239, 229, 0.03);
 }
 
+.building-card > div,
+.lane-card,
+.battle-preview,
+.combat-log,
+.resource-chip,
+.stat-card {
+  min-width: 0;
+}
+
 .building-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -197,6 +213,7 @@ button.secondary {
 .stage-card {
   text-align: left;
   padding: 16px;
+  white-space: normal;
 }
 
 .gear-card {
@@ -253,6 +270,11 @@ button.secondary {
 }
 
 @media (max-width: 960px) {
+  .app-shell {
+    width: min(100%, calc(100% - 20px));
+    padding: 16px 0 32px;
+  }
+
   .hero-banner,
   .stat-grid,
   .gear-grid,
@@ -260,6 +282,17 @@ button.secondary {
   .resource-panel,
   .lane-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-banner,
+  .panel {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .building-card {
@@ -270,5 +303,29 @@ button.secondary {
   .building-actions {
     width: 100%;
     flex-direction: column;
+  }
+
+  .gear-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    font-size: 15px;
+  }
+
+  .hero-banner h1 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .resource-chip strong,
+  .stat-card strong,
+  .stage-card strong {
+    font-size: 1.05rem;
+  }
+
+  .roadmap {
+    padding-left: 1rem;
   }
 }

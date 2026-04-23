@@ -257,7 +257,10 @@ export function App() {
                 <h3>라인 {lane.laneId}</h3>
                 <p>{lane.activeProject ? describeProject(lane.activeProject, now) : '비어 있음'}</p>
                 <p className="muted">
-                  예약: {lane.queue ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}` : '없음'}
+                  예약:{' '}
+                  {lane.queue
+                    ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}`
+                    : '없음'}
                 </p>
               </article>
             ))}
@@ -339,7 +342,7 @@ export function App() {
             </div>
           </div>
           <ol className="roadmap">
-            <li>로컬 저장을 붙여 건설/자원/영웅 상태를 문자열 기반으로 직렬화</li>
+            <li>로컬 저장을 붙여 건설, 자원, 영웅 상태를 문자열 기반으로 직렬화</li>
             <li>마지막 접속 시각을 기준으로 오프라인 생산량과 건설 완료를 계산</li>
             <li>장비 획득, 강화, 스테이지 해금, 전투 로그를 데이터 테이블로 확장</li>
             <li>클라우드 저장은 이후 Supabase 같은 BaaS를 연결해 계정 단위로 동기화</li>
