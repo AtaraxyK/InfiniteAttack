@@ -13,7 +13,7 @@ export const buildingDefinitions: BuildingDefinition[] = [
   {
     id: 'watchtower',
     name: '감시탑',
-    description: '스테이지 정보 노출량이 늘고 방어 점수에 보너스를 제공합니다.',
+    description: '스테이지 정보를 더 많이 보여주고 방어 점수에 보너스를 제공합니다.',
     baseDurationSeconds: 75,
     maxLevel: 20,
     cost: { gold: 180n, scrap: 25n },
@@ -22,7 +22,7 @@ export const buildingDefinitions: BuildingDefinition[] = [
   {
     id: 'aetherPump',
     name: '에테르 펌프',
-    description: '오프라인 보상과 희귀 재화 생산량을 높입니다.',
+    description: '희귀 재화 생산량을 높여 장기 성장의 속도를 끌어올립니다.',
     baseDurationSeconds: 120,
     maxLevel: 15,
     cost: { gold: 260n, aether: 6n },
@@ -43,20 +43,20 @@ export const stageDefinitions: StageDefinition[] = [
     name: '먼지 평원 1-1',
     encounterPower: 95n,
     reward: { gold: 60n, scrap: 8n },
-    note: '입문 전투. 무기 1장만 골라도 클리어 가능',
+    note: '입문 전투. 무기 1장만 골라도 클리어 가능한 난이도입니다.',
   },
   {
     id: 'stage-2',
     name: '먼지 평원 1-2',
     encounterPower: 180n,
     reward: { gold: 120n, scrap: 16n },
-    note: '무기와 보조 장비 조합을 의도한 구간',
+    note: '무기와 보조 장비 조합을 의도한 구간입니다.',
   },
   {
     id: 'stage-3',
     name: '유리 협곡 2-1',
     encounterPower: 360n,
     reward: { gold: 260n, scrap: 22n, aether: 3n },
-    note: '건물 보너스와 장비 시너지가 중요해지는 구간',
+    note: '건물 보너스와 장비 시너지가 중요해지는 구간입니다.',
   },
 ];
