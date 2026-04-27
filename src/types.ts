@@ -1,26 +1,50 @@
 export type CurrencyKey = 'gold' | 'scrap' | 'aether';
 
-export type BuildingDefinition = {
+export type ThemeKey = 'seaMist' | 'forestMoss' | 'deepSlate' | 'sandDusk' | 'roseAsh';
+
+export type TownTabId =
+  | 'town'
+  | 'outing'
+  | 'lab'
+  | 'forge'
+  | 'builder'
+  | 'market'
+  | 'inventory'
+  | 'fieldCollection'
+  | 'enemyCollection';
+
+export type BuildingCategory =
+  | 'house'
+  | 'normal'
+  | 'research'
+  | 'forge'
+  | 'builder'
+  | 'market'
+  | 'inventory'
+  | 'fieldCollection'
+  | 'enemyCollection';
+
+export type TownBuildingDefinition = {
   id: string;
   name: string;
   description: string;
+  category: BuildingCategory;
   icon: string;
-  baseDurationSeconds: number;
   maxLevel: number;
   cost: Partial<Record<CurrencyKey, bigint>>;
-  reward: string;
+  baseDurationSeconds: number;
+  rewardText: string;
+  production?: {
+    currency: CurrencyKey;
+    basePerMinute: bigint;
+    perLevel: bigint;
+  };
 };
 
 export type BuildingState = {
   id: string;
   level: number;
   pendingConfirmation: boolean;
-};
-
-export type ConstructionLane = {
-  laneId: number;
-  activeProject: ActiveConstruction | null;
-  queue: QueuedConstruction | null;
 };
 
 export type QueuedConstruction = {
@@ -33,27 +57,32 @@ export type ActiveConstruction = QueuedConstruction & {
   endsAt: number;
 };
 
-export type HeroStats = {
-  level: number;
-  attack: bigint;
-  defense: bigint;
-  hp: bigint;
-  critRate: number;
+export type ConstructionLane = {
+  laneId: number;
+  activeProject: ActiveConstruction | null;
+  queue: QueuedConstruction | null;
 };
 
-export type GearCard = {
+export type SpecialPanelEntry = {
   id: string;
-  name: string;
-  slot: 'weapon' | 'aux';
-  icon: string;
-  power: bigint;
-  synergy: string;
+  title: string;
+  description: string;
+  effect: string;
+  costText: string;
 };
 
-export type StageDefinition = {
+export type SpecialPanel = {
+  tabId: TownTabId;
+  name: string;
+  shortName: string;
+  description: string;
+  entries: SpecialPanelEntry[];
+};
+
+export type FieldPreview = {
   id: string;
   name: string;
-  encounterPower: bigint;
-  reward: Partial<Record<CurrencyKey, bigint>>;
-  note: string;
+  type: string;
+  description: string;
+  status: string;
 };
