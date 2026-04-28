@@ -134,6 +134,7 @@ button:disabled {
   width: min(1240px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 56px;
+  overflow-x: clip;
 }
 
 .mobile-friendly-shell {
@@ -146,6 +147,8 @@ button:disabled {
   background: var(--panel-bg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(14px);
+  min-width: 0;
+  overflow-x: clip;
 }
 
 .hero-banner {
@@ -160,6 +163,7 @@ button:disabled {
   display: grid;
   align-content: start;
   gap: 14px;
+  min-width: 0;
 }
 
 .theme-picker {
@@ -200,6 +204,7 @@ button:disabled {
 .hero-copy {
   max-width: 60ch;
   color: var(--text-soft);
+  overflow-wrap: anywhere;
 }
 
 .notice-box {
@@ -209,6 +214,7 @@ button:disabled {
   border: 1px solid rgba(var(--theme-soft-rgb), 0.18);
   background: rgba(var(--theme-soft-rgb), 0.08);
   color: var(--text-main);
+  overflow-wrap: anywhere;
 }
 
 .eyebrow {
@@ -227,6 +233,19 @@ button:disabled {
 
 .mobile-first-dashboard {
   align-items: start;
+}
+
+.dashboard > *,
+.panel > *,
+.section-head > *,
+.hero-copy-block,
+.hero-copy-block > *,
+.building-detail > *,
+.special-card > *,
+.lane-card > *,
+.overview-card > *,
+.field-card > * {
+  min-width: 0;
 }
 
 .panel {
@@ -314,6 +333,7 @@ button:disabled {
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  max-width: 100%;
   padding-bottom: 6px;
   scrollbar-width: thin;
 }
@@ -345,6 +365,7 @@ button:disabled {
   display: grid;
   gap: 12px;
   margin-top: 16px;
+  min-width: 0;
 }
 
 .building-card,
@@ -374,10 +395,24 @@ button:disabled {
   padding: 14px;
   background: transparent;
   text-align: left;
+  min-width: 0;
 }
 
 .building-summary-copy {
   min-width: 0;
+}
+
+.building-summary-copy p,
+.building-summary-copy h3,
+.building-detail p,
+.building-meta span,
+.special-card p,
+.special-card h3,
+.field-card p,
+.field-card strong,
+.lane-card p,
+.overview-card p {
+  overflow-wrap: anywhere;
 }
 
 .expand-indicator {
@@ -419,6 +454,7 @@ button:disabled {
 
 .field-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
 }
 
 .field-card {
@@ -439,6 +475,7 @@ button:disabled {
 .scroll-panel {
   max-height: 520px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
   scrollbar-width: thin;
 }
@@ -585,5 +622,12 @@ button:disabled {
 
   .building-detail {
     padding: 0 12px 12px;
+  }
+
+  .special-card,
+  .field-card,
+  .lane-card,
+  .overview-card {
+    width: 100%;
   }
 }

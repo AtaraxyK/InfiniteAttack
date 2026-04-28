@@ -58,7 +58,7 @@ export function App() {
   const [resources, setResources] = useState(initialResources);
   const [buildings, setBuildings] = useState(initialBuildings);
   const [lanes, setLanes] = useState(initialLanes);
-  const [notice, setNotice] = useState('마을에서 건축과 특수 건물을 관리할 수 있습니다.');
+  const [notice, setNotice] = useState('마을에서 건설과 특수 건물을 관리할 수 있습니다.');
   const [lastTickAt, setLastTickAt] = useState(Date.now());
   const [now, setNow] = useState(Date.now());
   const [expandedBuildingId, setExpandedBuildingId] = useState<string>('house');
@@ -193,7 +193,7 @@ export function App() {
         return { ...lane, queue: { buildingId, targetLevel } };
       }),
     );
-    setNotice(`${definition.name} Lv.${targetLevel} 건축을 예약했습니다.`);
+    setNotice(`${definition.name} Lv.${targetLevel} 건설을 예약했습니다.`);
   }
 
   function confirmBuilding(buildingId: string) {
@@ -217,12 +217,16 @@ export function App() {
     <div className={`app-theme theme-${theme}`}>
       <div className="app-shell mobile-friendly-shell">
         <header className="hero-banner compact-hero">
-          <div>
+          <div className="hero-copy-block">
             <p className="eyebrow">Village Management Prototype</p>
-            <h1>마을은 발전중!</h1>
-            <p className="hero-copy">마을과 특수 건물 중심 프로토타입입니다. 외출은 목록만 보이고 아직 진입하지 않습니다.</p>
+            <h1>마을 발전 중</h1>
+            <p className="hero-copy">
+              지금은 마을 운영과 건설 흐름을 먼저 보는 단계입니다. 외출은 목록만 보이고 실제 이동은 막아둔
+              상태입니다.
+            </p>
             <div className="notice-box">{notice}</div>
           </div>
+
           <div className="hero-side">
             <div className="resource-panel compact-resources">
               {(Object.keys(resources) as CurrencyKey[]).map((key) => (
@@ -234,6 +238,7 @@ export function App() {
                 </div>
               ))}
             </div>
+
             <div className="theme-picker compact-theme-picker" aria-label="테마 선택">
               {themeOptions.map((option) => (
                 <button
@@ -270,10 +275,11 @@ export function App() {
                 <div className="section-head">
                   <div>
                     <p className="eyebrow">Overview</p>
-                    <h2>한눈 요약</h2>
+                    <h2>마을 요약</h2>
                   </div>
                   {townPromotionReady ? <button className="promotion-button">승급 가능</button> : null}
                 </div>
+
                 <div className="overview-grid mobile-overview-grid">
                   <article className="overview-card">
                     <span>주인공의 집</span>
@@ -297,9 +303,9 @@ export function App() {
                 <div className="section-head">
                   <div>
                     <p className="eyebrow">Construction</p>
-                    <h2>건축</h2>
+                    <h2>건설</h2>
                   </div>
-                  <span className="pill">건설 목록은 내부 스크롤</span>
+                  <span className="pill">목록은 내부 스크롤</span>
                 </div>
 
                 <div className="lane-grid mobile-lane-grid">
@@ -349,6 +355,7 @@ export function App() {
                           </div>
                           <span className="expand-indicator">{expanded ? '−' : '+'}</span>
                         </button>
+
                         {expanded ? (
                           <div className="building-detail">
                             <p>{building.description}</p>
@@ -362,7 +369,7 @@ export function App() {
                                 disabled={isMaxLevel || !canAfford || blockedByHouse}
                                 onClick={() => queueConstruction(building.id)}
                               >
-                                {isMaxLevel ? '최대 레벨' : blockedByHouse ? '집 레벨 부족' : '건축 예약'}
+                                {isMaxLevel ? '최대 레벨' : blockedByHouse ? '집 레벨 부족' : '건설 예약'}
                               </button>
                               {state.pendingConfirmation ? (
                                 <button className="secondary" onClick={() => confirmBuilding(building.id)}>
@@ -420,7 +427,7 @@ export function App() {
                       <p>{entry.description}</p>
                       <p className="muted">비용: {entry.costText}</p>
                     </div>
-                    <button className="secondary" onClick={() => setNotice(`${entry.title} 항목은 아직 준비중입니다.`)}>
+                    <button className="secondary" onClick={() => setNotice(`${entry.title} 항목은 아직 준비중입니다!`)}>
                       준비중
                     </button>
                   </article>
