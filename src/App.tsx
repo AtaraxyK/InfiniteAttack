@@ -215,226 +215,226 @@ export function App() {
 
   return (
     <div className={`app-theme theme-${theme}`}>
-      <div className="app-shell mobile-friendly-shell">
-        <header className="hero-banner compact-hero">
-          <div className="hero-copy-block">
-            <p className="eyebrow">Village Management Prototype</p>
-            <h1>마을 발전 중</h1>
-            <p className="hero-copy">
-              지금은 마을 운영과 건설 흐름을 먼저 보는 단계입니다. 외출은 목록만 보이고 실제 이동은 막아둔
-              상태입니다.
-            </p>
+      <div className="app-shell game-shell">
+        <header className="panel top-summary-panel">
+          <div className="summary-copy-block">
+            <p className="eyebrow">Village Overview</p>
+            <div className="summary-headline-row">
+              <h1>마을 운영</h1>
+              {townPromotionReady ? <button className="promotion-button">승급 가능</button> : null}
+            </div>
             <div className="notice-box">{notice}</div>
           </div>
 
-          <div className="hero-side">
-            <div className="resource-panel compact-resources">
-              {(Object.keys(resources) as CurrencyKey[]).map((key) => (
-                <div key={key} className="resource-chip">
-                  <img className="game-icon" src={currencyIcons[key]} alt="" aria-hidden />
-                  <span>{currencyLabels[key]}</span>
-                  <strong>{formatBig(resources[key])}</strong>
-                  <small>분당 +{formatBig(productionSummary[key])}</small>
-                </div>
-              ))}
-            </div>
+          <div className="summary-overview-strip">
+            <article className="overview-card">
+              <span>주인공의 집</span>
+              <strong>Lv.{houseLevel}</strong>
+              <p>다른 건물 최대 레벨 기준</p>
+            </article>
+            <article className="overview-card">
+              <span>건설 라인</span>
+              <strong>{activeConstructionCount}/2</strong>
+              <p>예약 {queuedConstructionCount} / 확인 {pendingConfirmations}</p>
+            </article>
+            <article className="overview-card">
+              <span>열린 특수 건물</span>
+              <strong>{visibleSpecialTabs.length}개</strong>
+              <p>탭에서 바로 이동 가능</p>
+            </article>
+          </div>
 
-            <div className="theme-picker compact-theme-picker" aria-label="테마 선택">
-              {themeOptions.map((option) => (
-                <button
-                  key={option.key}
-                  className={theme === option.key ? 'theme-button active' : 'theme-button'}
-                  onClick={() => setTheme(option.key)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+          <div className="resource-panel compact-resources">
+            {(Object.keys(resources) as CurrencyKey[]).map((key) => (
+              <div key={key} className="resource-chip">
+                <img className="game-icon" src={currencyIcons[key]} alt="" aria-hidden />
+                <span>{currencyLabels[key]}</span>
+                <strong>{formatBig(resources[key])}</strong>
+                <small>분당 +{formatBig(productionSummary[key])}</small>
+              </div>
+            ))}
+          </div>
+
+          <div className="theme-picker compact-theme-picker" aria-label="테마 선택">
+            {themeOptions.map((option) => (
+              <button
+                key={option.key}
+                className={theme === option.key ? 'theme-button active' : 'theme-button'}
+                onClick={() => setTheme(option.key)}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </header>
 
-        <main className="dashboard mobile-first-dashboard">
-          <section className="panel sticky-top-panel">
-            <div className="tab-strip" role="tablist" aria-label="마을 메뉴">
-              <TabButton label="마을" active={activeTab === 'town'} onClick={() => setActiveTab('town')} />
-              <TabButton label="외출" active={activeTab === 'outing'} onClick={() => setActiveTab('outing')} />
-              {visibleSpecialTabs.map(({ tabId, buildingId }) => (
-                <TabButton
-                  key={tabId}
-                  label={findBuildingName(buildingId)}
-                  active={activeTab === tabId}
-                  onClick={() => setActiveTab(tabId)}
-                />
-              ))}
-            </div>
-          </section>
+        <section className="panel menu-panel">
+          <div className="tab-strip" role="tablist" aria-label="마을 메뉴">
+            <TabButton label="마을" active={activeTab === 'town'} onClick={() => setActiveTab('town')} />
+            <TabButton label="외출" active={activeTab === 'outing'} onClick={() => setActiveTab('outing')} />
+            {visibleSpecialTabs.map(({ tabId, buildingId }) => (
+              <TabButton
+                key={tabId}
+                label={findBuildingName(buildingId)}
+                active={activeTab === tabId}
+                onClick={() => setActiveTab(tabId)}
+              />
+            ))}
+          </div>
+        </section>
 
-          {activeTab === 'town' ? (
-            <>
-              <section className="panel">
+        <main className="content-region">
+          <div className="content-scroller">
+            {activeTab === 'town' ? (
+              <>
+                <section className="panel">
+                  <div className="section-head">
+                    <div>
+                      <p className="eyebrow">Construction Lines</p>
+                      <h2>건설 라인</h2>
+                    </div>
+                    <span className="pill">동시 2개, 줄당 예약 1개</span>
+                  </div>
+
+                  <div className="lane-grid mobile-lane-grid">
+                    {lanes.map((lane) => (
+                      <article key={lane.laneId} className="lane-card">
+                        <h3>라인 {lane.laneId}</h3>
+                        <p>{lane.activeProject ? describeProject(lane.activeProject, now) : '비어 있음'}</p>
+                        <p className="muted">
+                          예약:{' '}
+                          {lane.queue ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}` : '없음'}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="panel fill-panel">
+                  <div className="section-head">
+                    <div>
+                      <p className="eyebrow">Buildings</p>
+                      <h2>건설 목록</h2>
+                    </div>
+                    <span className="pill">펼쳐서 상세 확인</span>
+                  </div>
+
+                  <div className="building-list">
+                    {townBuildings.map((building) => {
+                      const state = buildings[building.id];
+                      const nextLevel = state.level + 1;
+                      const isMaxLevel = state.level >= building.maxLevel;
+                      const canAfford = canAffordCost(resources, building.cost);
+                      const blockedByHouse = building.category !== 'house' && nextLevel > houseLevel;
+                      const expanded = expandedBuildingId === building.id;
+
+                      return (
+                        <article
+                          key={building.id}
+                          className={expanded ? 'building-card compact-building expanded' : 'building-card compact-building'}
+                        >
+                          <button
+                            className="building-summary"
+                            onClick={() => setExpandedBuildingId(expanded ? '' : building.id)}
+                          >
+                            <img className="game-icon" src={building.icon} alt="" aria-hidden />
+                            <div className="building-summary-copy">
+                              <p className="eyebrow">{building.rewardText}</p>
+                              <h3>
+                                {building.name} Lv.{state.level}
+                              </h3>
+                              <p className="muted">
+                                {building.production
+                                  ? `분당 ${currencyLabels[building.production.currency]} +${formatBig(
+                                      getPerMinute(building.id, buildings),
+                                    )}`
+                                  : '기능 해금 건물'}
+                              </p>
+                            </div>
+                            <span className="expand-indicator">{expanded ? '−' : '+'}</span>
+                          </button>
+
+                          {expanded ? (
+                            <div className="building-detail">
+                              <p>{building.description}</p>
+                              <div className="building-meta">
+                                <span>다음 목표: Lv.{Math.min(nextLevel, building.maxLevel)}</span>
+                                <span>비용: {formatCost(building.cost)}</span>
+                                <span>시간: {building.baseDurationSeconds * Math.min(nextLevel, building.maxLevel)}초</span>
+                              </div>
+                              <div className="building-actions">
+                                <button
+                                  disabled={isMaxLevel || !canAfford || blockedByHouse}
+                                  onClick={() => queueConstruction(building.id)}
+                                >
+                                  {isMaxLevel ? '최대 레벨' : blockedByHouse ? '집 레벨 부족' : '건설 예약'}
+                                </button>
+                                {state.pendingConfirmation ? (
+                                  <button className="secondary" onClick={() => confirmBuilding(building.id)}>
+                                    완료 확인
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          ) : null}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+              </>
+            ) : null}
+
+            {activeTab === 'outing' ? (
+              <section className="panel fill-panel">
                 <div className="section-head">
                   <div>
-                    <p className="eyebrow">Overview</p>
-                    <h2>마을 요약</h2>
+                    <p className="eyebrow">Outing</p>
+                    <h2>필드 목록</h2>
                   </div>
-                  {townPromotionReady ? <button className="promotion-button">승급 가능</button> : null}
+                  <span className="pill">준비중</span>
                 </div>
 
-                <div className="overview-grid mobile-overview-grid">
-                  <article className="overview-card">
-                    <span>주인공의 집</span>
-                    <strong>Lv.{houseLevel}</strong>
-                    <p>다른 건물 최대 레벨 기준</p>
-                  </article>
-                  <article className="overview-card">
-                    <span>건설 라인</span>
-                    <strong>{activeConstructionCount}/2</strong>
-                    <p>예약 {queuedConstructionCount} / 완료 확인 {pendingConfirmations}</p>
-                  </article>
-                  <article className="overview-card">
-                    <span>특수 건물</span>
-                    <strong>{visibleSpecialTabs.length}개</strong>
-                    <p>열린 탭 수</p>
-                  </article>
+                <div className="field-list">
+                  {fieldPreviews.map((field) => (
+                    <button key={field.id} className="field-card" onClick={() => onOpenField(field.name)}>
+                      <span>{field.type}</span>
+                      <strong>{field.name}</strong>
+                      <p>{field.description}</p>
+                      <em>{field.status}</em>
+                    </button>
+                  ))}
                 </div>
               </section>
+            ) : null}
 
-              <section className="panel">
+            {activePanel ? (
+              <section className="panel fill-panel">
                 <div className="section-head">
                   <div>
-                    <p className="eyebrow">Construction</p>
-                    <h2>건설</h2>
+                    <p className="eyebrow">Special Building</p>
+                    <h2>{activePanel.name}</h2>
                   </div>
-                  <span className="pill">목록은 내부 스크롤</span>
                 </div>
-
-                <div className="lane-grid mobile-lane-grid">
-                  {lanes.map((lane) => (
-                    <article key={lane.laneId} className="lane-card">
-                      <h3>라인 {lane.laneId}</h3>
-                      <p>{lane.activeProject ? describeProject(lane.activeProject, now) : '비어 있음'}</p>
-                      <p className="muted">
-                        예약:{' '}
-                        {lane.queue ? `${findBuildingName(lane.queue.buildingId)} Lv.${lane.queue.targetLevel}` : '없음'}
-                      </p>
+                <p className="panel-description">{activePanel.description}</p>
+                <div className="special-list">
+                  {activePanel.entries.map((entry) => (
+                    <article key={entry.id} className="special-card">
+                      <div>
+                        <p className="eyebrow">{entry.effect}</p>
+                        <h3>{entry.title}</h3>
+                        <p>{entry.description}</p>
+                        <p className="muted">비용: {entry.costText}</p>
+                      </div>
+                      <button className="secondary" onClick={() => setNotice(`${entry.title} 항목은 아직 준비중입니다!`)}>
+                        준비중
+                      </button>
                     </article>
                   ))}
                 </div>
-
-                <div className="building-list scroll-panel">
-                  {townBuildings.map((building) => {
-                    const state = buildings[building.id];
-                    const nextLevel = state.level + 1;
-                    const isMaxLevel = state.level >= building.maxLevel;
-                    const canAfford = canAffordCost(resources, building.cost);
-                    const blockedByHouse = building.category !== 'house' && nextLevel > houseLevel;
-                    const expanded = expandedBuildingId === building.id;
-
-                    return (
-                      <article
-                        key={building.id}
-                        className={expanded ? 'building-card compact-building expanded' : 'building-card compact-building'}
-                      >
-                        <button
-                          className="building-summary"
-                          onClick={() => setExpandedBuildingId(expanded ? '' : building.id)}
-                        >
-                          <img className="game-icon" src={building.icon} alt="" aria-hidden />
-                          <div className="building-summary-copy">
-                            <p className="eyebrow">{building.rewardText}</p>
-                            <h3>
-                              {building.name} Lv.{state.level}
-                            </h3>
-                            <p className="muted">
-                              {building.production
-                                ? `분당 ${currencyLabels[building.production.currency]} +${formatBig(
-                                    getPerMinute(building.id, buildings),
-                                  )}`
-                                : '기능 해금 건물'}
-                            </p>
-                          </div>
-                          <span className="expand-indicator">{expanded ? '−' : '+'}</span>
-                        </button>
-
-                        {expanded ? (
-                          <div className="building-detail">
-                            <p>{building.description}</p>
-                            <div className="building-meta">
-                              <span>다음 목표: Lv.{Math.min(nextLevel, building.maxLevel)}</span>
-                              <span>비용: {formatCost(building.cost)}</span>
-                              <span>시간: {building.baseDurationSeconds * Math.min(nextLevel, building.maxLevel)}초</span>
-                            </div>
-                            <div className="building-actions">
-                              <button
-                                disabled={isMaxLevel || !canAfford || blockedByHouse}
-                                onClick={() => queueConstruction(building.id)}
-                              >
-                                {isMaxLevel ? '최대 레벨' : blockedByHouse ? '집 레벨 부족' : '건설 예약'}
-                              </button>
-                              {state.pendingConfirmation ? (
-                                <button className="secondary" onClick={() => confirmBuilding(building.id)}>
-                                  완료 확인
-                                </button>
-                              ) : null}
-                            </div>
-                          </div>
-                        ) : null}
-                      </article>
-                    );
-                  })}
-                </div>
               </section>
-            </>
-          ) : null}
-
-          {activeTab === 'outing' ? (
-            <section className="panel">
-              <div className="section-head">
-                <div>
-                  <p className="eyebrow">Outing</p>
-                  <h2>필드 목록</h2>
-                </div>
-                <span className="pill">준비중</span>
-              </div>
-              <div className="field-list scroll-panel">
-                {fieldPreviews.map((field) => (
-                  <button key={field.id} className="field-card" onClick={() => onOpenField(field.name)}>
-                    <span>{field.type}</span>
-                    <strong>{field.name}</strong>
-                    <p>{field.description}</p>
-                    <em>{field.status}</em>
-                  </button>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {activePanel ? (
-            <section className="panel">
-              <div className="section-head">
-                <div>
-                  <p className="eyebrow">Special Building</p>
-                  <h2>{activePanel.name}</h2>
-                </div>
-              </div>
-              <p className="panel-description">{activePanel.description}</p>
-              <div className="special-list scroll-panel">
-                {activePanel.entries.map((entry) => (
-                  <article key={entry.id} className="special-card">
-                    <div>
-                      <p className="eyebrow">{entry.effect}</p>
-                      <h3>{entry.title}</h3>
-                      <p>{entry.description}</p>
-                      <p className="muted">비용: {entry.costText}</p>
-                    </div>
-                    <button className="secondary" onClick={() => setNotice(`${entry.title} 항목은 아직 준비중입니다!`)}>
-                      준비중
-                    </button>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ) : null}
+            ) : null}
+          </div>
         </main>
       </div>
     </div>
